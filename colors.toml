@@ -1,0 +1,42 @@
+# Jolly Roger: an Omarchy theme for the age of sail.
+#
+# background  midnight sea      foreground  sailcloth       accent  doubloon gold
+# red         blood flag        orange      lantern flame   yellow  brass
+# green       palm              cyan        lagoon          blue    navy coat
+# magenta     port wine         brown       oak and rum     muted   weathered rope
+
+mode = "dark"
+
+accent = "#d9a441"
+selection = "#1e3344"
+muted = "#62717c"
+
+background = "#0b1219"
+dark_background = "#080d13"
+darker_background = "#05090d"
+lighter_background = "#131d27"
+
+foreground = "#d8c9a7"
+dark_foreground = "#8b8f8a"
+light_foreground = "#e6d9ba"
+bright_foreground = "#f4e9cd"
+
+# Window borders: a gilded frame, brass fading to oak.
+hyprland_active_border = "rgba(f2d382ee) rgba(d9a441ee) rgba(8a5a36ee) 45deg"
+hyprland_inactive_border = "rgba(1e3344aa)"
+
+red = "#dc5347"
+yellow = "#e3bb5e"
+orange = "#e0803c"
+green = "#8fb06c"
+cyan = "#4fb5aa"
+blue = "#6b9bd0"
+magenta = "#b9779f"
+brown = "#8a5a36"
+
+bright_red = "#e8685c"
+bright_yellow = "#f2d382"
+bright_green = "#abc98a"
+bright_cyan = "#76d2c6"
+bright_blue = "#8fb8e6"
+bright_magenta = "#d39abb"

@@ -1,0 +1,25 @@
+<!doctype html>
+<!-- The palette card used in the README. 1600x400. -->
+<meta charset="utf-8">
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { width: 1600px; height: 400px; background: #0b1219; font: 19px/1.35 'JetBrainsMono Nerd Font', monospace; color: #f4e9cd; padding: 34px 40px; }
+  .grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 20px; }
+  .sw { height: 84px; border-radius: 6px; border: 1px solid rgba(216, 201, 167, 0.14); margin-bottom: 8px; }
+  small { display: block; color: #8b8f8a; font-size: 15.5px; }
+</style>
+<div class="grid" id="grid"></div>
+<script>
+  const palette = [
+    ['background', '#0b1219', 'midnight sea'], ['foreground', '#d8c9a7', 'sailcloth'], ['accent', '#d9a441', 'doubloon gold'],
+    ['selection', '#1e3344', 'deep water'], ['muted', '#62717c', 'weathered rope'], ['brown', '#8a5a36', 'oak and rum'],
+    ['magenta', '#b9779f', 'port wine'], ['red', '#dc5347', 'blood flag'], ['orange', '#e0803c', 'lantern flame'],
+    ['yellow', '#e3bb5e', 'brass'], ['green', '#8fb06c', 'palm'], ['cyan', '#4fb5aa', 'lagoon'], ['blue', '#6b9bd0', 'navy coat'],
+  ];
+  const grid = document.getElementById('grid');
+  for (const [name, hex, what] of palette) {
+    const el = document.createElement('div');
+    el.innerHTML = `<div class="sw" style="background:${hex}"></div>${name}<small>${hex}</small><small>${what}</small>`;
+    grid.appendChild(el);
+  }
+</script>

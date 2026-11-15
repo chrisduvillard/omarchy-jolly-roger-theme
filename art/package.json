@@ -1,0 +1,8 @@
+{
+  "name": "jolly-roger-art",
+  "private": true,
+  "type": "module",
+  "description": "Procedural wallpaper generator for the Jolly Roger Omarchy theme",
+  "scripts": { "render": "node render.mjs" },
+  "dependencies": { "playwright-core": "^1.49.0" }
+}

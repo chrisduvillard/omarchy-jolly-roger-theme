@@ -1,0 +1,166 @@
+<!doctype html>
+<!-- The theme-picker preview: the palette applied to a mock Omarchy desktop
+     (bar, tiled terminals, editor) over the default wallpaper. 2560x1440. -->
+<meta charset="utf-8">
+<title>Jolly Roger preview</title>
+<style>
+  :root {
+    --bg: #0b1219; --bg-dark: #080d13; --bg-light: #131d27; --sel: #1e3344; --muted: #62717c;
+    --fg: #d8c9a7; --fg-dark: #8b8f8a; --fg-bright: #f4e9cd; --accent: #d9a441;
+    --red: #dc5347; --orange: #e0803c; --yellow: #e3bb5e; --green: #8fb06c; --cyan: #4fb5aa; --blue: #6b9bd0; --magenta: #b9779f; --brown: #8a5a36;
+    --b-red: #e8685c; --b-yellow: #f2d382; --b-green: #abc98a; --b-cyan: #76d2c6; --b-blue: #8fb8e6; --b-magenta: #d39abb;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 2560px; height: 1440px; overflow: hidden; }
+  body { background: #05090d url('../backgrounds/01-black-sails.webp') center / cover; font: 22px/1.42 'JetBrainsMono Nerd Font', 'JetBrains Mono', monospace; color: var(--fg); -webkit-font-smoothing: antialiased; }
+  .bar { position: absolute; inset: 0 0 auto 0; height: 52px; background: var(--bg); display: flex; align-items: center; justify-content: space-between; padding: 0 26px; font-size: 22px; }
+  .bar .ws span { margin-right: 26px; color: var(--muted); } .bar .ws .on { color: var(--fg); }
+  .bar .mid { position: absolute; left: 50%; transform: translateX(-50%); }
+  .bar .tray span { margin-left: 30px; }
+  .desk { position: absolute; inset: 52px 0 0 0; padding: 20px; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 55fr 45fr; gap: 20px; }
+  .win { background: rgba(11, 18, 25, 0.95); border: 4px solid rgba(30, 51, 68, 0.67); overflow: hidden; position: relative; padding: 18px 22px; white-space: pre; }
+  .win.active { border-image: linear-gradient(45deg, #f2d382ee, #d9a441ee, #8a5a36ee) 1; }
+  .r { color: var(--red); } .o { color: var(--orange); } .y { color: var(--yellow); } .g { color: var(--green); } .c { color: var(--cyan); } .b { color: var(--blue); } .m { color: var(--magenta); }
+  .a { color: var(--accent); } .mu { color: var(--muted); } .df { color: var(--fg-dark); } .br { color: var(--fg-bright); } .bc { color: var(--b-cyan); } .bm { color: var(--b-magenta); } .bb { color: var(--b-blue); }
+  .bold { font-weight: 700; }
+  /* editor */
+  .nvim { padding: 0; display: grid; grid-template-columns: 330px 1fr; grid-template-rows: 1fr 34px; }
+  .tree { background: var(--bg-dark); padding: 16px 0 0 18px; color: var(--fg-dark); border-right: 2px solid var(--bg-light); }
+  .tree .cur { background: var(--sel); color: var(--fg-bright); display: block; margin-left: -18px; padding-left: 18px; }
+  .code { padding: 16px 0 0 0; overflow: hidden; min-width: 0; }
+  .code .ln { display: inline-block; width: 74px; text-align: right; padding-right: 22px; color: var(--muted); }
+  .code .hl { background: var(--bg-light); display: block; } .code .hl .ln { color: var(--accent); }
+  .status { grid-column: 1 / 3; min-width: 0; background: var(--bg-light); display: flex; align-items: center; font-size: 20px; }
+  .status .mode { background: var(--accent); color: var(--bg); font-weight: 700; padding: 0 16px; height: 100%; display: flex; align-items: center; }
+  .status .seg { padding: 0 16px; } .status .right { margin-left: auto; display: flex; height: 100%; align-items: center; }
+  .status .pos { background: var(--sel); height: 100%; display: flex; align-items: center; padding: 0 16px; color: var(--fg-bright); }
+  /* btop */
+  .btop { padding: 26px 16px 14px; row-gap: 22px; display: grid; grid-template-columns: 1fr 1.25fr; grid-template-rows: 0.9fr 1fr 1fr; gap: 10px; font-size: 19px; }
+  .box { border: 2px solid; border-radius: 8px; position: relative; padding: 16px 14px 8px; min-width: 0; min-height: 0; }
+  .box > b { position: absolute; top: -14px; left: 14px; background: var(--bg); padding: 0 8px; font-weight: 400; color: var(--fg); }
+  .box > b i { color: var(--accent); font-style: normal; }
+  .cpu { grid-column: 1 / 3; border-color: var(--magenta); } .mem { border-color: var(--green); grid-row: 2 / 4; } .net { border-color: var(--red); } .proc { border-color: var(--accent); grid-row: 2 / 4; grid-column: 2; }
+  .net { grid-column: 1; grid-row: 3; } .mem { grid-row: 2; }
+  .graph { position: absolute; left: 12px; right: 43%; bottom: 8px; height: 62%; display: flex; align-items: flex-end; gap: 2px; }
+  .graph i { flex: 1; background: linear-gradient(to top, var(--cyan), var(--blue) 55%, var(--magenta)); opacity: .9; }
+  .cores { position: absolute; right: 14px; top: 16px; width: 40%; border: 2px solid var(--muted); border-radius: 6px; padding: 6px 12px; line-height: 1.38; }
+  .meter { display: inline-block; height: 12px; vertical-align: middle; margin: 0 8px; background: linear-gradient(to right, var(--green), var(--cyan), var(--blue)); }
+  .meter.t { background: linear-gradient(to right, var(--green), var(--yellow), var(--red)); } .meter.f { background: linear-gradient(to right, var(--magenta), var(--blue), var(--cyan)); }
+  .rail { display: inline-block; height: 12px; vertical-align: middle; background: var(--sel); }
+  .sel { background: var(--sel); color: var(--accent); display: block; margin: 0 -14px; padding: 0 14px; }
+  .proc { overflow: hidden; } .proc > b { top: 2px; background: none; display: none; }
+  .swatches { display: flex; gap: 0; margin-top: 4px; } .swatches i { width: 62px; height: 30px; display: block; }
+  .cursor { display: inline-block; width: 13px; height: 27px; background: var(--fg-bright); vertical-align: text-bottom; }
+</style>
+
+<div class="bar">
+  <div class="ws"><span class="on">󰣇</span><span class="on">1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
+  <div class="mid">Saturday 20:25</div>
+  <div class="tray"><span>󰂯</span><span>󰖩</span><span>󰕾</span><span>󰁹</span></div>
+</div>
+
+<div class="desk">
+  <div class="win nvim active">
+<div class="tree"><span class="a">󰉋 jolly-roger</span>
+ <span class="y">󰉋</span> art
+ <span class="y">󰝰</span> lib
+   <span class="y">󰌞</span> core.js
+   <span class="y">󰌞</span> emblem.js
+<span class="cur">   <span class="y">󰌞</span> ship.js</span> <span class="y">󰉋</span> scenes
+ <span class="y">󰉋</span> backgrounds
+  LICENSE
+ <span class="o"></span> colors.toml
+ <span class="mu"></span> icons.theme
+ <span class="g">󰈙</span> CREDITS.md
+ <span class="g">󰈙</span> README.md
+ <span class="m">󰋩</span> preview.png
+ <span class="m">󰋩</span> unlock.png</div><div class="code"><span class="ln">41</span><span class="mu">// One square sail, bellying toward the bow.</span>
+<span class="ln">42</span><span class="m">function</span> <span class="b">squareSail</span>(<span class="o">c</span>, <span class="o">mast</span>, <span class="o">spec</span>, <span class="o">opts</span>) {
+<span class="ln">43</span>  <span class="m">const</span> [<span class="br">foot</span>, <span class="br">head</span>, <span class="br">wf</span>, <span class="br">wh</span>] <span class="c">=</span> spec;
+<span class="ln">44</span>  <span class="m">const</span> <span class="br">belly</span> <span class="c">=</span> opts.<span class="b">belly</span> <span class="c">*</span> mast.<span class="b">k</span>;
+<span class="ln">45</span>  <span class="m">const</span> <span class="br">yf</span> <span class="c">=</span> <span class="b">mastY</span>(mast, foot), <span class="br">yh</span> <span class="c">=</span> <span class="b">mastY</span>(mast, head);
+<span class="hl"><span class="ln">46</span>  <span class="m">const</span> <span class="br">hw</span> <span class="c">=</span> (wh <span class="c">*</span> mast.<span class="b">k</span> <span class="c">*</span> opts.<span class="b">brace</span>) <span class="c">/</span> <span class="y">2</span>;</span><span class="ln">47</span>
+<span class="ln">48</span>  c.<span class="b">beginPath</span>();
+<span class="ln">49</span>  c.<span class="b">moveTo</span>(xh <span class="c">-</span> hw, yh);
+<span class="ln">50</span>  c.<span class="b">lineTo</span>(xh <span class="c">+</span> hw, yh);
+<span class="ln">51</span>  <span class="mu">// leeward leech</span>
+<span class="ln">52</span>  c.<span class="b">quadraticCurveTo</span>(xh <span class="c">+</span> hw <span class="c">+</span> belly <span class="c">*</span> <span class="y">1.25</span>, yh <span class="c">+</span> h <span class="c">*</span> <span class="y">0.55</span>, xf <span class="c">+</span> fw, yf);
+<span class="ln">53</span>  <span class="m">for</span> (<span class="m">let</span> <span class="br">i</span> <span class="c">=</span> <span class="y">1</span>; i <span class="c">&lt;=</span> N; i<span class="c">++</span>) {
+<span class="ln">54</span>    <span class="m">const</span> <span class="br">u</span> <span class="c">=</span> i <span class="c">/</span> N, <span class="br">x</span> <span class="c">=</span> <span class="b">lerp</span>(xf <span class="c">+</span> fw, xf <span class="c">-</span> fw, u);
+<span class="ln">55</span>    c.<span class="b">lineTo</span>(x, yf <span class="c">-</span> <span class="bc">Math</span>.<span class="b">sin</span>(u <span class="c">*</span> <span class="bc">Math</span>.<span class="y">PI</span>) <span class="c">*</span> roach);
+<span class="ln">56</span>  }
+<span class="ln">57</span>  c.<span class="b">closePath</span>();
+<span class="ln">58</span>  c.<span class="b">fill</span>();
+<span class="ln">59</span>  <span class="m">return</span> { <span class="g">hoisted</span>: <span class="o">true</span>, <span class="g">flag</span>: <span class="g">'jolly-roger'</span> };
+<span class="ln">60</span>}</div>
+<div class="status"><span class="mode">NORMAL</span><span class="seg a"> main</span><span class="seg">art/lib/ship.js</span><div class="right"><span class="seg df">javascript</span><span class="seg df">utf-8</span><span class="pos">46:38</span></div></div>
+  </div>
+
+  <div class="win btop">
+    <div class="box cpu"><b><i>¹</i>cpu</b><div class="graph" id="g"></div>
+<div class="cores">CPU <span class="meter" style="width:36%"></span><span class="rail" style="width:22%"></span> <span class="br"> 61%</span>
+C0  <span class="meter" style="width:24%"></span><span class="rail" style="width:34%"></span>  42% <span class="g">47°C</span>
+C1  <span class="meter" style="width:44%"></span><span class="rail" style="width:14%"></span>  78% <span class="y">58°C</span>
+C2  <span class="meter" style="width:14%"></span><span class="rail" style="width:44%"></span>  23% <span class="g">45°C</span>
+C3  <span class="meter t" style="width:52%"></span><span class="rail" style="width:6%"></span>  93% <span class="r">71°C</span></div></div>
+    <div class="box mem"><b><i>²</i>mem</b>Total:<span class="br">        64.0 GiB</span>
+Used: <span class="meter" style="width:34%"></span><span class="rail" style="width:14%"></span><span class="br">21.7 GiB</span>
+Avail:<span class="meter t" style="width:22%"></span><span class="rail" style="width:26%"></span><span class="br">42.3 GiB</span>
+Cache:<span class="meter f" style="width:28%"></span><span class="rail" style="width:20%"></span><span class="br">18.9 GiB</span>
+Free: <span class="meter f" style="width:16%"></span><span class="rail" style="width:32%"></span><span class="br"> 9.4 GiB</span></div>
+    <div class="box net"><b><i>³</i>net</b><span class="g">▼</span> download  <span class="br">15.5 MiB/s</span>
+  Total:    <span class="br">25.2 GiB</span>
+<span class="r">▲</span> upload    <span class="br"> 6.7 MiB/s</span>
+  Total:    <span class="br">15.0 GiB</span></div>
+    <div class="box proc"><b><i>⁴</i>proc</b><span class="df">  Pid Program      User      Mem   Cpu%</span>
+<span class="sel"> 1718 hyprland     jack     412M    3.4</span> 2209 nvim         jack      78M    2.1
+ 2231 btop         jack      22M    1.8
+ 1904 quickshell   jack     391M    1.2
+ 3310 chromium     jack     1.2G    0.9
+ 2077 ghostty      jack     141M    0.4
+ 4102 lazygit      jack      36M    0.2
+ 1650 pipewire     jack      18M    0.1
+ 4410 rum          jack     750M    0.0
+ 1002 systemd      root      14M    0.0</div>
+  </div>
+
+  <div class="win"><span class="g">❯</span> <span class="b">eza</span> <span class="c">-la</span> <span class="y">--icons</span>
+<span class="b">drwxr-xr-x</span>    <span class="mu">-</span> <span class="y">jack</span> <span class="g">15 Nov 20:10</span> <span class="b bold">󰉋 art</span>
+<span class="b">drwxr-xr-x</span>    <span class="mu">-</span> <span class="y">jack</span> <span class="g">15 Nov 20:18</span> <span class="b bold">󰉋 backgrounds</span>
+<span class="df">.rw-r--r--</span> <span class="g">1.1k</span> <span class="y">jack</span> <span class="g">15 Nov 19:44</span>  LICENSE
+<span class="df">.rw-r--r--</span>  <span class="g">912</span> <span class="y">jack</span> <span class="g">15 Nov 19:41</span> <span class="o"> colors.toml</span>
+<span class="df">.rw-r--r--</span> <span class="g">4.6k</span> <span class="y">jack</span> <span class="g">15 Nov 20:21</span> <span class="y">󰈙 CREDITS.md</span>
+<span class="df">.rw-r--r--</span>   <span class="g">12</span> <span class="y">jack</span> <span class="g">15 Nov 19:41</span>  icons.theme
+<span class="df">.rw-r--r--</span> <span class="g">1.9M</span> <span class="y">jack</span> <span class="g">15 Nov 20:24</span> <span class="m">󰋩 preview.png</span>
+<span class="df">.rw-r--r--</span> <span class="g">5.2k</span> <span class="y">jack</span> <span class="g">15 Nov 20:22</span> <span class="y">󰈙 README.md</span>
+<span class="df">.rw-r--r--</span>  <span class="g">38k</span> <span class="y">jack</span> <span class="g">15 Nov 20:19</span> <span class="m">󰋩 unlock.png</span>
+
+<span class="g">❯</span> <span class="b">git</span> log <span class="c">--oneline</span> <span class="y">-4</span>
+<span class="y">a41f9c2</span> <span class="mu">(</span><span class="bc bold">HEAD</span> <span class="mu">-></span> <span class="g bold">main</span><span class="mu">)</span> Hoist the colours
+<span class="y">7d03b1e</span> Chart a course for Tortuga
+<span class="y">2c88e40</span> Splice the mainbrace
+<span class="y">e19a7f3</span> Weigh anchor
+
+<span class="c">~/jolly-roger</span> <span class="m"> main</span> <span class="g">❯</span> <span class="cursor"></span></div>
+
+  <div class="win"><span class="g">❯</span> <span class="b">fastfetch</span>
+
+<span class="a">             |    |    |             </span>   <span class="a bold">jack</span>@<span class="a bold">blackpowder</span>
+<span class="a">            )_)  )_)  )_)            </span>   <span class="mu">────────────────</span>
+<span class="a">           )___))___))___)\          </span>   <span class="c">OS</span>      Omarchy 4.5 <span class="mu">(Arch Linux)</span>
+<span class="a">          )____)____)_____)\\        </span>   <span class="c">Kernel</span>  Linux 6.17
+<span class="a">        _____|____|____|____\\\__    </span>   <span class="c">WM</span>      Hyprland <span class="mu">(Wayland)</span>
+<span class="df">--------</span><span class="a">\                   /</span><span class="df">--------</span>   <span class="c">Theme</span>   <span class="a">Jolly Roger</span>
+<span class="b">  ^^^^^ ^^^^^^^^^^^^^^^^^^^^^        </span>   <span class="c">Shell</span>   bash 5.3
+<span class="b">    ^^^^      ^^^^     ^^^    ^^     </span>   <span class="c">Term</span>    ghostty
+<span class="b">         ^^^^      ^^^               </span>   <span class="c">Font</span>    JetBrainsMono Nerd Font
+
+<div class="swatches"><i style="background:var(--bg-light)"></i><i style="background:var(--red)"></i><i style="background:var(--green)"></i><i style="background:var(--yellow)"></i><i style="background:var(--blue)"></i><i style="background:var(--magenta)"></i><i style="background:var(--cyan)"></i><i style="background:var(--fg)"></i></div><div class="swatches"><i style="background:var(--muted)"></i><i style="background:var(--b-red)"></i><i style="background:var(--b-green)"></i><i style="background:var(--b-yellow)"></i><i style="background:var(--b-blue)"></i><i style="background:var(--b-magenta)"></i><i style="background:var(--b-cyan)"></i><i style="background:var(--fg-bright)"></i></div>
+<span class="c">~</span> <span class="g">❯</span> <span class="cursor"></span></div>
+</div>
+<script>
+  // deterministic CPU history for the graph
+  let s = 9; const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647;
+  const g = document.getElementById('g'); let v = 0.4;
+  for (let i = 0; i < 110; i++) { v = Math.min(0.97, Math.max(0.08, v + (rnd() - 0.48) * 0.22)); const b = document.createElement('i'); b.style.height = (v * 100) + '%'; g.appendChild(b); }
+</script>
